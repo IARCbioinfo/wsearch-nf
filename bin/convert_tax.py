@@ -1,4 +1,4 @@
-#!/usr/bin/python3.6 
+#!/usr/bin/env python
 
 import re
 import sys
@@ -18,14 +18,13 @@ for line in tax :
 	try :
 		sure_taxon_list=line.strip().split('\t')[3].split(',')
 	except IndexError : #taxonomy not sure (under the threshold)
-	#	sure_taxon_list=line.strip().split('\t')[1].split(',')
+		sure_taxon_list=["d:NA","p:NA","c:NA","o:NA","f:NA","g:NA","s:NA"]
 		print(line)
 	
 	try : 
 		ns_taxon_list=line.strip().split('\t')[1].split(',')
 	except IndexError :
-		ns_taxon_list=["d:NA","p:NA","c:NA","o:NA","f:NA","g:NA","s:NA"]
-		sure_taxon_list=["d:NA","p:NA","c:NA","o:NA","f:NA","g:NA","s:NA"]
+		ns_taxon_list=["d:NA(1.00)","p:NA(1.00)","c:NA(1.00)","o:NA(1.00)","f:NA(1.00)","g:NA(1.00)","s:NA(1.00)"]
 
 	sure_strip_taxon_l = []
 	for s_t in sure_taxon_list :

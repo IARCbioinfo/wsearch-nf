@@ -29,7 +29,8 @@ params.threads	         = "20"
 
 log.info ""
 log.info "----------------------------------------------------------------"
-log.info "  Microbiome.nf 1.0 : Microbiome analysis "
+log.info "  Wsearch.nf 1.0 : Microbiome analysis with Usearch, Vsearch and Phyloseq"
+log.info "  by Pierre BERTRAND : pierre.bertrand148@gmail.com"
 log.info "----------------------------------------------------------------"
 log.info "Copyright (C) IARC/WHO"
 log.info "This program comes with ABSOLUTELY NO WARRANTY; for details see LICENSE"
@@ -43,10 +44,21 @@ if (params.help) {
     log.info "  USAGE                                                 "
     log.info "--------------------------------------------------------"
     log.info ""
-    log.info "nextflow run iarcbioinfo/microbiome.nf --input_folder fastq/"
+    log.info "nextflow run iarcbioinfo/wsearch.nf --input_folder fastq/ --output_folder output/ --experiment expirement_name"
     log.info ""
     log.info "Mandatory arguments:"
-    log.info "--input_folder        FOLDER               input folder with fastq files"
+    log.info "--input_folder        FOLDER               Path to the folder containing .fastq files (forward and reverse) of each samples"
+    log.info "--output_folder       FOLDER               Folder where the pipeline will perform and output"
+    log.info "--experiment          STRING               Name of the experiment"
+    log.info "" 
+    log.info "Optionals arguments:"   
+    log.info "--maxdiff             INT                  Maximum number of missmatch between the forward and the reverse read, in the overlap region. Can be decreased if reads have great quality [default=40]"
+    log.info "--overlap             INT                  Minimum length (base pairs) of the overlap between the forward and the reverse reads. Couple of reads with a smaller overlap are removed [default=50]"
+    log.info "--identity            INT                  Percentage of identity minimum between the overlap region of the forward and reverse reads. Can be increased with reads have good quality. [default=70]"
+    log.info "--min_contig_length   INT                  Minimum length of the contig, after merge of the forward and reverse read [default=50]"
+    log.info "--max_contig_length   INT                  Maximum length of the contig, after merge of the forward and reverse read [default=550]"
+    log.info "--max_ee              NUM                  Maximum of expected errors allowed in each contigs. Expected errors are linked to the quality score from the fastq, and permit to estimate the number of errors in the contig. Can be increased if reads have a bad quality. https://drive5.com/usearch/manual8.0/expected_errors.html"
+    log.info "--threads             INT                  Number of threads pipeline can use. Used only for steps need lot of computing power (Clustering, Denoising, Taxonomy, Analysis). [default=20]"
     log.info ""
     exit 0
 }
@@ -72,7 +84,7 @@ process cacheSilva {
   storeDir 'db/silva'
 
   output:
-  file '*.fasta.gz' into silva
+  file '*.fasta' into silva
   file 'rdp_gold.fa' into chimera
 
   script:
@@ -112,7 +124,7 @@ process run_usearch_merge {
 
      shell:
      '''
-     usearch -fastq_mergepairs !{fq[0]} -reverse !{fq[1]} -fastqout !{sampleID}"_contig_!{params.experiment}.fastq" -fastq_maxdiffs !{params.maxdiff} -fastq_minovlen !{params.overlap} -report 2a_merging_seqs_report_!{params.experiment}.txt -tabbedout 2b_tabbedout_!{params.experiment}.txt -fastq_pctid !{params.identity} -fastq_minmergelen !{params.min_contig_length} -fastq_maxmergelen !{params.max_contig_length} > !{sampleID}.log
+     usearch -fastq_mergepairs !{fq[0]} -reverse !{fq[1]} -fastqout !{sampleID}"_contig_!{params.experiment}.fastq" -fastq_maxdiffs !{params.maxdiff} -fastq_minovlen !{params.overlap} -report 2a_merging_seqs_report_!{sampleID}_!{params.experiment}.txt -tabbedout 2b_tabbedout_!{sampleID}_!{params.experiment}.txt -fastq_pctid !{params.identity} -fastq_minmergelen !{params.min_contig_length} -fastq_maxmergelen !{params.max_contig_length} > !{sampleID}.log
      '''
   }
 
@@ -222,7 +234,13 @@ process run_usearch_denoiseOtuAsv_taxonomy {
 
 	shell:
         '''
-        denoiseOtuAsv_taxonomy.sh !{fastaFiles} !{labelledFiles} !{chimera} !{silva} !{params.threads}
+	echo "\n ||| Pool files & Dereplication ||| \n"
+
+	#pool all files in one
+	cat !{fastaFiles} > all_SF.fasta
+	cat !{labelledFiles} > all_labelled.fasta
+
+        denoiseOtuAsv_taxonomy.sh all_SF.fasta all_labelled.fasta !{chimera} !{silva} !{params.threads}
 	'''
 }
 
