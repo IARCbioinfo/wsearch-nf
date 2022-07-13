@@ -17,7 +17,7 @@
 
 params.help          	 = null
 params.input_folder  	 = "microbiome_analysis"
-params.output_folder	 = "Output_folder"
+params.output_folder	 = "./"
 params.maxdiff		 = "40"
 params.experiment	 = "Experiment"
 params.overlap		 = "50"
