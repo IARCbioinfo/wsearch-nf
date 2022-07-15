@@ -84,7 +84,7 @@ process cacheSilva {
   storeDir 'db/silva'
 
   output:
-  file '*.fasta' into silva
+  file 'SILVA138_RESCRIPt.fasta' into silva
   file 'rdp_gold.fa' into chimera
 
   script:
