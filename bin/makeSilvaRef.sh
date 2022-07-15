@@ -37,3 +37,4 @@ else
      printf '%s\n' "found file $chimera" >&1
 fi
 
+gzip -d SILVA138_RESCRIPt.fasta.gz
