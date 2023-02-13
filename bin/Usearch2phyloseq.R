@@ -93,7 +93,7 @@ otu_ps = phyloseq(OTU,OTU_TAX)
 
 
 ASV = otu_table(asv_tab, taxa_are_rows = T)
-colnames(ASV) = sub("_S[^_]*", "", colnames(OTU)) #remove Usearch tag after the sample name
+colnames(ASV) = sub("_S[^_]*", "", colnames(ASV)) #remove Usearch tag after the sample name
 ASV_TAX = tax_table(asv_tax)
 
 asv_ps = phyloseq(ASV,ASV_TAX)

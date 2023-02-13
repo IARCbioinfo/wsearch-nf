@@ -77,8 +77,10 @@ log.info "max_ee			= ${params.max_ee}"
 log.info "threads			= ${params.threads}"
 log.info ""
 
-fastq_all_pairs = Channel.fromFilePairs(params.input_folder+'/*{L001_R1,L001_R2}_001.fastq')
-fastq_all = Channel.fromPath(params.input_folder+'/*.fastq')
+
+fastq_allgz_pairs = Channel.fromFilePairs(params.input_folder+'/*{L001_R1,L001_R2}_001.fastq.gz')
+//fastq_all = Channel.fromPath(params.input_folder+'/*.fastq.gz').view()
+
 
 process cacheSilva {
   storeDir 'db/silva'
@@ -93,13 +95,29 @@ process cacheSilva {
   """
 }
 
+process decompress {
+
+     input:
+     tuple val(sampleID), path(fq) from fastq_allgz_pairs
+
+     output:
+     file '*fastq' into fastq_all
+     tuple val(sampleID), file('*_R{1,2}.fastq') into fastq_all_pairs
+
+     shell:
+     '''
+     gzip -dc !{fq[0]} > !{sampleID}_R1.fastq
+     gzip -dc !{fq[1]} > !{sampleID}_R2.fastq
+     '''
+}
+
 			
 process run_usearch_summary {
 
      publishDir params.output_folder+"/1.reads_summary", mode: 'copy'
 
      input:
-     file(fq) from fastq_all
+     file(fq) from fastq_all.flatten()
 
      output:
      file '*info.txt' into summary
@@ -124,7 +142,7 @@ process run_usearch_merge {
 
      shell:
      '''
-     usearch -fastq_mergepairs !{fq[0]} -reverse !{fq[1]} -fastqout !{sampleID}"_contig_!{params.experiment}.fastq" -fastq_maxdiffs !{params.maxdiff} -fastq_minovlen !{params.overlap} -report 2a_merging_seqs_report_!{sampleID}_!{params.experiment}.txt -tabbedout 2b_tabbedout_!{sampleID}_!{params.experiment}.txt -fastq_pctid !{params.identity} -fastq_minmergelen !{params.min_contig_length} -fastq_maxmergelen !{params.max_contig_length} > !{sampleID}.log
+     usearch -fastq_mergepairs !{fq[0]} -reverse !{fq[1]} -fastqout !{sampleID}_contig_!{params.experiment}.fastq -fastq_maxdiffs !{params.maxdiff} -fastq_minovlen !{params.overlap} -report 2a_merging_seqs_report_!{sampleID}_!{params.experiment}.txt -tabbedout 2b_tabbedout_!{sampleID}_!{params.experiment}.txt -fastq_pctid !{params.identity} -fastq_minmergelen !{params.min_contig_length} -fastq_maxmergelen !{params.max_contig_length} > !{sampleID}.log
      '''
   }
 
