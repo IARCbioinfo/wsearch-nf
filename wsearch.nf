@@ -95,7 +95,9 @@ process cacheSilva {
   """
 }
 
-process decompress {
+process decompress { 
+
+
 
      input:
      tuple val(sampleID), path(fq) from fastq_allgz_pairs
@@ -114,23 +116,25 @@ process decompress {
 			
 process run_usearch_summary {
 
+
      publishDir params.output_folder+"/1.reads_summary", mode: 'copy'
 
      input:
      file(fq) from fastq_all.flatten()
 
      output:
-     file '*info.txt' into summary
+     file 'SummaryReport*.log' into summary
   
      shell:
      '''
-     usearch -fastx_info !{fq} -output !{fq}.1a_fwd_fastq_info.txt > !{fq}.log
+     usearch -fastx_info !{fq} -output !{fq}.1a_fwd_fastq_info.txt > SummaryReport_!{fq}.log
      '''
   }
 
 process run_usearch_merge {
 
-     publishDir params.output_folder+"/2.merge_reads", mode: 'copy'
+
+	publishDir params.output_folder+"/2.merge_reads", mode: 'copy'
 
      input:
      tuple val(sampleID), file(fq) from fastq_all_pairs
@@ -142,11 +146,12 @@ process run_usearch_merge {
 
      shell:
      '''
-     usearch -fastq_mergepairs !{fq[0]} -reverse !{fq[1]} -fastqout !{sampleID}_contig_!{params.experiment}.fastq -fastq_maxdiffs !{params.maxdiff} -fastq_minovlen !{params.overlap} -report 2a_merging_seqs_report_!{sampleID}_!{params.experiment}.txt -tabbedout 2b_tabbedout_!{sampleID}_!{params.experiment}.txt -fastq_pctid !{params.identity} -fastq_minmergelen !{params.min_contig_length} -fastq_maxmergelen !{params.max_contig_length} > !{sampleID}.log
+     usearch -fastq_mergepairs !{fq[0]} -reverse !{fq[1]} -fastqout !{sampleID}_contig_!{params.experiment}.fastq -fastq_maxdiffs !{params.maxdiff} -fastq_minovlen !{params.overlap} -report 2a_merging_seqs_report_!{sampleID}_!{params.experiment}.txt -tabbedout 2b_tabbedout_!{sampleID}_!{params.experiment}.txt -fastq_pctid !{params.identity} -fastq_minmergelen !{params.min_contig_length} -fastq_maxmergelen !{params.max_contig_length} 2> MergeReport_!{sampleID}_!{params.experiment}.log
      '''
   }
 
 process run_usearch_filter {
+
 	
 	publishDir params.output_folder+"/3.filtered_contigs", mode: 'copy'
 
@@ -159,11 +164,12 @@ process run_usearch_filter {
 
 	shell:
 	'''
-	usearch -fastq_filter !{fq} -fastaout !{ID}"_filtered_!{params.experiment}.fasta" -fastq_maxee !{params.max_ee} > !{ID}.log
+	usearch -fastq_filter !{fq} -fastaout !{ID}"_filtered_!{params.experiment}.fasta" -fastq_maxee !{params.max_ee} 2> FilterReport_!{ID}_!{params.experiment}.log
 	'''
 }
 
 process run_usearch_rename {
+
 
         publishDir params.output_folder+"/4.labeled_data", mode: 'copy'
 
@@ -182,6 +188,7 @@ process run_usearch_rename {
 
 process run_usearch_derep {
 
+
         publishDir params.output_folder+"/5.dereplicated_data", mode: 'copy'
 
         input:
@@ -190,14 +197,16 @@ process run_usearch_derep {
         output:
         set val(ID), file('*uniq*.fasta') into derep
 	set val(ID), file(fa) into labelled2	
+	file('*.log') into log5
 
         shell:
         '''
-	usearch -fastx_uniques !{fa} -fastaout !{ID}"_uniq_!{params.experiment}.fasta" -sizeout
+	usearch -fastx_uniques !{fa} -fastaout !{ID}"_uniq_!{params.experiment}.fasta" -sizeout > >(tee derep_!{ID}.log) 2> >(tee -a derep_!{ID}.log >&2)
 	'''
 } 
 
 process run_usearch_lowAbund {
+
 
         publishDir params.output_folder+"/6.low-abund_data", mode: 'copy'
 
@@ -206,10 +215,11 @@ process run_usearch_lowAbund {
 
         output:
         set val(ID), file('*low-abund*.fasta') into lowAbund
+	file('*.log') into log6
 
         shell:
         '''
-	usearch -sortbysize !{fa} -fastaout !{ID}"_low-abund_!{params.experiment}.fasta" -maxsize 1
+	usearch -sortbysize !{fa} -fastaout !{ID}"_low-abund_!{params.experiment}.fasta" -maxsize 1  > >(tee lowAbund_!{ID}.log) 2> >(tee -a lowAbund_!{ID}.log >&2)
 	'''
 }
 
@@ -222,15 +232,18 @@ process run_usearch_exact {
 
         output:
         file('*SF*.fasta') into SF
+	file('*.log') into log7
 
         shell:
         '''
-	usearch -search_exact !{fa_l} -db !{fa_la} -strand plus -notmatched !{ID}"_SF_!{params.experiment}.fasta"
+	usearch -search_exact !{fa_l} -db !{fa_la} -strand plus -notmatched !{ID}"_SF_!{params.experiment}.fasta" > >(tee exact_!{ID}.log) 2> >(tee -a exact_!{ID}.log >&2)
 	'''
 }
 
 
 process run_usearch_denoiseOtuAsv_taxonomy {
+
+	label 'big_mem'
 
         publishDir params.output_folder+"/8.Denoising-Taxonomy/", mode: 'copy'
 	cpus params.threads
@@ -249,6 +262,7 @@ process run_usearch_denoiseOtuAsv_taxonomy {
 	file('Taxonomy/sure_sintax_newTax_otu.txt') into otuTax
 	file('8B.asv/unoise_zotus_tab.txt') into asvTable
 	file('Taxonomy/sure_sintax_newTax_asv.txt') into asvTax
+	file('*.log') into log8
 
 	shell:
         '''
@@ -263,6 +277,8 @@ process run_usearch_denoiseOtuAsv_taxonomy {
 }
 
 process run_usearch_Ranalysis {
+
+	label 'mid_mem'
 
         publishDir params.output_folder, mode: 'copy'
         cpus params.threads
