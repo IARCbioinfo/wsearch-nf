@@ -28,17 +28,17 @@
             "properties": {
                 "input_folder": {
                     "type": "string",
-                    "default": "/path/to/fastqs",
+                    "default": "/data/Microbiome_16S_CRC/work/bertrandp/data/fastq_r12",
                     "format": "directory-path"
                 },
                 "output_folder": {
                     "type": "string",
-                    "default": "/path/to/output",
+                    "default": "/data/Microbiome_16S_CRC/work/bertrandp/testUItower",
                     "format": "directory-path"
                 },
                 "metadata": {
                     "type": "string",
-                    "default": "/path/to/metadata",
+                    "default": "/data/Microbiome_16S_CRC/work/bertrandp/data/metadata_merged.xlsx",
                     "pattern": "^*.xlsx$",
                     "format": "file-path",
                     "mimetype": "application/vnd.ms-excel"
