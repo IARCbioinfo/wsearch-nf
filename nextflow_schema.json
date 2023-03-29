@@ -1,0 +1,106 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/IARCbioinfo/wsearch-nf/master/nextflow_schema.json",
+    "title": "IARCbioinfo Wsearch-nf pipeline parameters",
+    "description": "Microbiome analysis with usearch, vsearch and phyloseq",
+    "type": "object",
+    "definitions": {
+        "generic_options": {
+            "title": "Generic options",
+            "type": "object",
+            "fa_icon": "fas fa-file-import",
+            "description": "Less common options for the pipeline, typically set in a config file.",
+            "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
+            "properties": {
+                "help": {
+                    "type": "boolean",
+                    "description": "Display help text.",
+                    "fa_icon": "fas fa-question-circle",
+                    "hidden": true
+                }
+            }
+        },
+        "mandatory_arguments": {
+            "title": "Mandatory arguments",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "input_folder": {
+                    "type": "string",
+                    "default": "/path/to/fastqs",
+                    "format": "directory-path"
+                },
+                "output_folder": {
+                    "type": "string",
+                    "default": "/path/to/output",
+                    "format": "directory-path"
+                },
+                "metadata": {
+                    "type": "string",
+                    "default": "/path/to/metadata",
+                    "pattern": "^*.xlsx$",
+                    "format": "file-path",
+                    "mimetype": "application/vnd.ms-excel"
+                },
+                "experiment": {
+                    "type": "string",
+                    "default": "experiment1"
+                }
+            },
+            "required": [
+                "input_folder",
+                "output_folder",
+                "metadata",
+                "experiment"
+            ]
+        },
+        "optionals_arguments": {
+            "title": "Optionals arguments",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "maxdiff": {
+                    "type": "string",
+                    "default": "40"
+                },
+                "overlap": {
+                    "type": "string",
+                    "default": "50"
+                },
+                "identity": {
+                    "type": "string",
+                    "default": "70"
+                },
+                "min_contig_length": {
+                    "type": "string",
+                    "default": "50"
+                },
+                "max_contig_length": {
+                    "type": "string",
+                    "default": "550"
+                },
+                "max_ee": {
+                    "type": "string",
+                    "default": "1"
+                },
+                "threads": {
+                    "type": "string",
+                    "default": "20"
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/definitions/generic_options"
+        },
+        {
+            "$ref": "#/definitions/mandatory_arguments"
+        },
+        {
+            "$ref": "#/definitions/optionals_arguments"
+        }
+    ]
+}
