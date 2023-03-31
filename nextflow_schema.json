@@ -35,7 +35,7 @@
                 },
                 "output_folder": {
                     "type": "string",
-                    "default": "/data/Microbiome_16S_CRC/work/bertrandp/testUItower",
+                    "default": "/data/Microbiome_16S_CRC/work/bertrandp/output_testUItower",
                     "format": "directory-path",
                     "fa_icon": "far fa-folder-open",
                     "description": "Folder where the pipeline will perform and output"
