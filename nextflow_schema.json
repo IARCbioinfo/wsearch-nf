@@ -43,11 +43,10 @@
                 "metadata": {
                     "type": "string",
                     "default": "/data/Microbiome_16S_CRC/work/bertrandp/data/metadata_merged.xlsx",
-                    "pattern": "^*.xlsx$",
                     "format": "directory-path",
                     "mimetype": "application/vnd.ms-excel",
                     "fa_icon": "far fa-address-card",
-                    "description": "maj?"
+                    "description": "File with all informations (columns) about samples (rows), excel format (xlsx)"
                 },
                 "experiment": {
                     "type": "string",
