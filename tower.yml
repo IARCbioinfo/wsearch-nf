@@ -1,0 +1,3 @@
+reports:
+    "RDS_preprocessing/*.Rds":
+        display: "R objects use for the shiny analysis"
