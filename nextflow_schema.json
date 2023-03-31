@@ -28,24 +28,31 @@
             "properties": {
                 "input_folder": {
                     "type": "string",
-                    "default": "/data/Microbiome_16S_CRC/work/bertrandp/data/fastq_r12",
-                    "format": "directory-path"
+                    "default": "/path/to/fastqs",
+                    "format": "directory-path",
+                    "fa_icon": "fas fa-folder-open",
+                    "description": "Path to the folder containing .fastq files (forward and reverse) of each samples"
                 },
                 "output_folder": {
                     "type": "string",
-                    "default": "/data/Microbiome_16S_CRC/work/bertrandp/testUItower",
-                    "format": "directory-path"
+                    "default": "/path/to/output",
+                    "format": "directory-path",
+                    "fa_icon": "far fa-folder-open",
+                    "description": "Folder where the pipeline will perform and output"
                 },
                 "metadata": {
                     "type": "string",
-                    "default": "/data/Microbiome_16S_CRC/work/bertrandp/data/metadata_merged.xlsx",
+                    "default": "/path/to/metadata",
                     "pattern": "^*.xlsx$",
                     "format": "file-path",
-                    "mimetype": "application/vnd.ms-excel"
+                    "mimetype": "application/vnd.ms-excel",
+                    "fa_icon": "far fa-address-card"
                 },
                 "experiment": {
                     "type": "string",
-                    "default": "experiment1"
+                    "default": "experiment1",
+                    "fa_icon": "fas fa-vials",
+                    "description": "Name of the experiment"
                 }
             },
             "required": [
@@ -53,7 +60,8 @@
                 "output_folder",
                 "metadata",
                 "experiment"
-            ]
+            ],
+            "fa_icon": "fas fa-star"
         },
         "optionals_arguments": {
             "title": "Optionals arguments",
@@ -63,33 +71,42 @@
             "properties": {
                 "maxdiff": {
                     "type": "string",
-                    "default": "40"
+                    "default": "40",
+                    "description": "Maximum number of missmatch between the forward and the reverse read, in the overlap region. Can be decreased if reads have great quality [default=40]"
                 },
                 "overlap": {
                     "type": "string",
-                    "default": "50"
+                    "default": "50",
+                    "description": "Minimum length (base pairs) of the overlap between the forward and the reverse reads. Couple of reads with a smaller overlap are removed [default=50]"
                 },
                 "identity": {
                     "type": "string",
-                    "default": "70"
+                    "default": "70",
+                    "description": "Percentage of identity minimum between the overlap region of the forward and reverse reads. Can be increased with reads have good quality. [default=70]"
                 },
                 "min_contig_length": {
                     "type": "string",
-                    "default": "50"
+                    "default": "50",
+                    "description": "Minimum length of the contig, after merge of the forward and reverse read [default=50]"
                 },
                 "max_contig_length": {
                     "type": "string",
-                    "default": "550"
+                    "default": "550",
+                    "description": "Maximum length of the contig, after merge of the forward and reverse read [default=550]"
                 },
                 "max_ee": {
                     "type": "string",
-                    "default": "1"
+                    "default": "1",
+                    "description": "Maximum of expected errors allowed in each contigs. Expected errors are linked to the quality score from the fastq, and permit to estimate the number of errors in the contig. Can be increased if reads have a bad quality. https://drive5.com/usearch/manual8.0/expected_errors.html"
                 },
                 "threads": {
                     "type": "string",
-                    "default": "20"
+                    "default": "20",
+                    "fa_icon": "fas fa-server",
+                    "description": "Number of threads pipeline can use. Used only for steps need lot of computing power (Clustering, Denoising, Taxonomy, Analysis). [default=20]"
                 }
-            }
+            },
+            "fa_icon": "far fa-star"
         }
     },
     "allOf": [
