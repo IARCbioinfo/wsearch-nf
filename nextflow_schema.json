@@ -46,7 +46,8 @@
                     "pattern": "^*.xlsx$",
                     "format": "directory-path",
                     "mimetype": "application/vnd.ms-excel",
-                    "fa_icon": "far fa-address-card"
+                    "fa_icon": "far fa-address-card",
+                    "description": "maj?"
                 },
                 "experiment": {
                     "type": "string",
