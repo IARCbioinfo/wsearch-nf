@@ -29,12 +29,14 @@
                 "input_folder": {
                     "type": "string",
                     "default": "/data/Microbiome_16S_CRC/work/bertrandp/data/fastq_r12",
+                    "format": "directory-path",
                     "fa_icon": "fas fa-folder-open",
                     "description": "Path to the folder containing .fastq files (forward and reverse) of each samples"
                 },
                 "output_folder": {
                     "type": "string",
                     "default": "/data/Microbiome_16S_CRC/work/bertrandp/testUItower",
+                    "format": "directory-path",
                     "fa_icon": "far fa-folder-open",
                     "description": "Folder where the pipeline will perform and output"
                 },
@@ -42,7 +44,7 @@
                     "type": "string",
                     "default": "/data/Microbiome_16S_CRC/work/bertrandp/data/metadata_merged.xlsx",
                     "pattern": "^*.xlsx$",
-                    "format": "file-path",
+                    "format": "directory-path",
                     "mimetype": "application/vnd.ms-excel",
                     "fa_icon": "far fa-address-card"
                 },
