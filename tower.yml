@@ -1,3 +1,15 @@
 reports:
-    "RDS_preprocessing/*.Rds":
-        display: "R objects use for the shiny analysis"
+        "RDS_preprocessing/":
+                display: "R objects for the shiny analysis"
+        "nf-pipeline_info/*.txt":
+                display: "Run informations"
+        "8.Denoising-Taxonomy/uniques_all_SF.log":
+                display: "8.Sequences before clustering"
+        "8.Denoising-Taxonomy/8A.otu/*.log":
+                display: "8A.otu"
+        "8.Denoising-Taxonomy/8B.asv/*.log":
+                display: "8B.asv"
+        "3.filtered_contigs/*.log":
+                display: "3.filtered_contigs"
+        "2.merge_reads/*.log":
+                display: "2.merge_reads"        
